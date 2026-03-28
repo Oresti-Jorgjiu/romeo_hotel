@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Romeo Hotel – Admin</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/admin-styles.css">
+</head>
+<body>
+
+<!-- ── Login screen ──────────────────────────────────────── -->
+<div id="login-screen" class="login-screen" style="display:none">
+  <div class="login-card">
+    <div class="login-brand">
+      <span class="login-mark">R</span>
+      <div>
+        <strong>Romeo Hotel</strong>
+        <span>Admin Panel</span>
+      </div>
+    </div>
+    <h1 class="login-title">Sign in</h1>
+    <form id="login-form">
+      <div class="admin-field">
+        <label for="login-email">Email</label>
+        <input id="login-email" type="email" required autocomplete="username" placeholder="admin@romeohotel.al">
+      </div>
+      <div class="admin-field">
+        <label for="login-password">Password</label>
+        <input id="login-password" type="password" required autocomplete="current-password" placeholder="••••••••">
+      </div>
+      <div class="login-row">
+        <label class="login-remember">
+          <input type="checkbox" id="login-remember"> Remember me
+        </label>
+      </div>
+      <div id="login-error" class="login-error" style="display:none"></div>
+      <button class="admin-btn primary full-width" type="submit" id="login-btn">Sign in</button>
+    </form>
+  </div>
+</div>
+
+<!-- Removed Setup Screen -->
+
+<!-- ── Main app ───────────────────────────────────────────── -->
+<div id="app" style="display:none">
+
+  <header class="admin-header">
+    <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle menu">☰</button>
+    <div class="admin-header-brand">Romeo Hotel Admin</div>
+    <div class="admin-header-right">
+      <span id="admin-user-email" class="admin-user-email"></span>
+      <button class="admin-btn ghost sm" id="logout-btn">Logout</button>
+    </div>
+  </header>
+
+  <div class="admin-layout">
+    <nav class="admin-sidebar" id="admin-sidebar">
+      <ul class="sidebar-nav">
+        <li><a href="#" class="sidebar-link active" data-tab="dashboard">
+          <span class="sidebar-icon">📊</span> Dashboard
+        </a></li>
+        <li><a href="#" class="sidebar-link" data-tab="rooms">
+          <span class="sidebar-icon">🛏</span> Rooms &amp; Prices
+        </a></li>
+        <li><a href="#" class="sidebar-link" data-tab="availability">
+          <span class="sidebar-icon">📅</span> Availability
+        </a></li>
+        <li><a href="#" class="sidebar-link" data-tab="reservations">
+          <span class="sidebar-icon">📋</span> Reservations
+        </a></li>
+
+        <li><a href="#" class="sidebar-link" data-tab="settings">
+          <span class="sidebar-icon">⚙️</span> Settings
+        </a></li>
+      </ul>
+      <div class="sidebar-footer">
+        <a href="../index.html" class="sidebar-link" target="_blank">← View website</a>
+      </div>
+    </nav>
+    <div class="sidebar-scrim" id="sidebar-scrim"></div>
+
+    <main class="admin-content" id="admin-content">
+
+      <!-- Dashboard -->
+      <div class="tab-panel active" id="tab-dashboard">
+        <div class="panel-header">
+          <h2>Dashboard</h2>
+          <button class="admin-btn secondary sm" id="refresh-dashboard">↻ Refresh</button>
+        </div>
+        <div class="stats-cards" id="dashboard-stats">
+          <div class="stat-card"><div class="stat-num" id="stat-bookings">—</div><div class="stat-label">Total Bookings</div></div>
+          <div class="stat-card"><div class="stat-num" id="stat-pending">—</div><div class="stat-label">Pending</div></div>
+          <div class="stat-card"><div class="stat-num" id="stat-confirmed">—</div><div class="stat-label">Confirmed</div></div>
+          <div class="stat-card"><div class="stat-num" id="stat-revenue">—</div><div class="stat-label">Est. Revenue (EUR)</div></div>
+        </div>
+        <div class="panel-row">
+          <div class="admin-card" style="flex:2">
+            <div class="card-head">Recent Bookings</div>
+            <div id="recent-bookings-list"><div class="empty-state">No bookings yet.</div></div>
+          </div>
+      </div>
+
+      <!-- Rooms & Prices -->
+      <div class="tab-panel" id="tab-rooms">
+        <div class="panel-header">
+          <h2>Rooms &amp; Prices</h2>
+          <button class="admin-btn primary sm" id="save-prices-btn">Save Changes</button>
+        </div>
+      <div class="admin-card">
+          <div class="table-scroll">
+          <table class="admin-table" id="rooms-table">
+            <thead>
+              <tr>
+                <th>Room</th>
+                <th>Price (EUR/night)</th>
+                <th>Size (m²)</th>
+                <th>Max Guests</th>
+                <th>Available</th>
+              </tr>
+            </thead>
+            <tbody id="rooms-table-body">
+              <tr><td colspan="5" class="empty-state">Loading…</td></tr>
+            </tbody>
+          </table>
+          </div>
+        </div>
+        <div class="admin-card" style="margin-top:20px">
+          <div class="card-head">Seasonal Price Adjustments</div>
+          <p class="card-note">Set a price multiplier for specific date ranges (e.g. 1.2 = 20% higher in peak season).</p>
+          <div id="seasonal-list"></div>
+          <button class="admin-btn secondary sm" id="add-seasonal-btn" style="margin-top:12px">+ Add Season</button>
+        </div>
+      </div>
+
+      <!-- Availability Calendar -->
+      <div class="tab-panel" id="tab-availability">
+        <div class="panel-header">
+          <h2>Availability Calendar</h2>
+          <div style="display:flex;gap:10px;align-items:center">
+            <select id="avail-room-select" class="admin-select">
+              <option value="">Select room…</option>
+            </select>
+            <button class="admin-btn primary sm" id="block-dates-btn">Block Dates</button>
+            <button class="admin-btn secondary sm" id="unblock-dates-btn">Unblock</button>
+          </div>
+        </div>
+        <div class="avail-legend">
+          <span class="legend-dot website"></span> Website booking
+          <span class="legend-dot bookingcom" style="margin-left:12px"></span> Booking.com
+          <span class="legend-dot maintenance" style="margin-left:12px"></span> Maintenance
+          <span class="legend-dot available" style="margin-left:12px"></span> Available
+        </div>
+        <div class="admin-card">
+          <div id="avail-calendar-container">
+            <div class="empty-state">Select a room to view availability.</div>
+          </div>
+        </div>
+        <div class="admin-card" style="margin-top:20px">
+          <div class="card-head">Block/Unblock Selected Dates</div>
+          <div class="form-inline">
+            <div class="admin-field">
+              <label>From</label>
+              <input type="date" id="block-from">
+            </div>
+            <div class="admin-field">
+              <label>To</label>
+              <input type="date" id="block-to">
+            </div>
+            <div class="admin-field">
+              <label>Reason</label>
+              <select id="block-reason" class="admin-select">
+                <option value="maintenance">Maintenance</option>
+                <option value="private">Private use</option>
+              </select>
+            </div>
+            <button class="admin-btn primary sm" id="apply-block-btn">Apply</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reservations -->
+      <div class="tab-panel" id="tab-reservations">
+        <div class="panel-header">
+          <h2>Reservations</h2>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <select id="res-filter-source" class="admin-select"><option value="">All sources</option><option value="website">Website</option><option value="booking.com">Booking.com</option><option value="manual">Manual</option></select>
+            <select id="res-filter-status" class="admin-select"><option value="">All statuses</option><option value="pending">Pending</option><option value="confirmed">Confirmed</option><option value="cancelled">Cancelled</option></select>
+            <button class="admin-btn secondary sm" id="export-csv-btn">⬇ Export CSV</button>
+          </div>
+        </div>
+        <div class="admin-card">
+          <div class="table-scroll">
+          <table class="admin-table" id="reservations-table">
+            <thead>
+              <tr>
+                <th>Ref</th>
+                <th>Guest</th>
+                <th>Room</th>
+                <th>Check-in</th>
+                <th>Check-out</th>
+                <th>Guests</th>
+                <th>Total</th>
+                <th>Source</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="reservations-body">
+              <tr><td colspan="10" class="empty-state">Loading…</td></tr>
+            </tbody>
+          </table>
+          </div>
+        </div>
+      </div>
+
+
+
+      <!-- Settings -->
+      <div class="tab-panel" id="tab-settings">
+        <div class="panel-header"><h2>Settings</h2></div>
+        <div class="panel-row" style="flex-direction:column;gap:20px">
+
+<!-- Removed Firebase config section as it is synced from code -->
+
+
+
+          <div class="admin-card">
+            <div class="card-head">Notifications</div>
+            <div class="settings-grid">
+              <div class="admin-field"><label>Owner Email</label><input id="s-ownerEmail" type="email" placeholder="owner@romeohotel.al"></div>
+              <div class="admin-field" style="align-items:flex-start">
+                <label style="margin-bottom:8px">Alerts</label>
+                <label class="toggle-label"><input type="checkbox" id="s-syncAlerts" checked> Sync alerts</label>
+                <label class="toggle-label"><input type="checkbox" id="s-conflictAlerts" checked> Conflict alerts</label>
+              </div>
+            </div>
+            <button class="admin-btn primary sm" id="save-notif-btn" style="margin-top:14px">Save Notification Settings</button>
+          </div>
+
+<!-- Removed Danger Zone -->
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- ── Modals ─────────────────────────────────────────────── -->
+<div class="admin-modal" id="booking-detail-modal" style="display:none">
+  <div class="admin-modal-inner">
+    <button class="admin-modal-close" data-close-modal aria-label="Close">×</button>
+    <h3>Booking Details</h3>
+    <div id="booking-detail-content"></div>
+    <div class="admin-modal-actions" id="booking-detail-actions"></div>
+  </div>
+</div>
+
+<div class="admin-modal" id="confirm-modal" style="display:none">
+  <div class="admin-modal-inner" style="max-width:400px">
+    <h3 id="confirm-title">Confirm action</h3>
+    <p id="confirm-message"></p>
+    <div class="admin-modal-actions">
+      <button class="admin-btn danger" id="confirm-ok">Confirm</button>
+      <button class="admin-btn secondary" data-close-modal>Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast container -->
+<div id="admin-toast-container"></div>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+<!-- App config -->
+<script src="../assets/js/config.js"></script>
+
+<!-- Admin scripts -->
+<script src="js/conflict-detector.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>
